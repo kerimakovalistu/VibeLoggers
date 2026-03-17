@@ -43,16 +43,16 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f6f8f6] p-4 relative">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f6f8f6] dark:bg-slate-900 p-4 relative transition-colors duration-200">
+      <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
         <div className="flex flex-col items-center mb-8">
           <div className="size-16 rounded-full bg-[#13ec5b] flex items-center justify-center text-white mb-4">
             <Waves size={32} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
             {isRegister ? "VibeLoggers'a Katıl" : "Tekrar Hoş Geldin"}
           </h2>
-          <p className="text-slate-500 mt-2 text-center">
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-center">
             {isRegister
               ? "Duygularını dünyayla paylaşmaya başla."
               : "Duygularını günlüğe kaydetmeye devam et."}
@@ -60,7 +60,7 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-800">
             {error}
           </div>
         )}
@@ -68,19 +68,19 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {isRegister && (
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Ad Soyad</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Ad Soyad</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
                 placeholder="Örn: Emre Can"
               />
             </div>
           )}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
               {isRegister ? "E-posta" : "E-posta veya Kullanıcı Adı"}
             </label>
             <input
@@ -88,18 +88,18 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
               placeholder={isRegister ? "ornek@email.com" : "E-posta veya kullanıcı adı"}
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Şifre</label>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Şifre</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#13ec5b]/50 transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -107,14 +107,14 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-[#13ec5b] hover:bg-[#10d451] text-white font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-green-100 disabled:opacity-50 mt-6"
+            className="w-full py-4 bg-[#13ec5b] hover:bg-[#10d451] text-white font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-green-100 dark:shadow-none disabled:opacity-50 mt-6"
           >
             {loading ? "Bekleniyor..." : isRegister ? "Kayıt Ol" : "Giriş Yap"}
           </button>
         </form>
 
         <div className="mt-8 text-center">
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             {isRegister ? "Zaten hesabın var mı?" : "Henüz hesabın yok mu?"}{" "}
             <button
               onClick={() => {

@@ -16,13 +16,13 @@ export default function Sidebar({ user }: { user: { name: string; isAdmin?: bool
   }
 
   return (
-    <aside className="w-72 bg-[#f0f2f0] border-r border-slate-200 flex flex-col fixed h-full">
+    <aside className="w-72 bg-[#f0f2f0] dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col fixed h-full transition-colors duration-200">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-10">
           <div className="size-10 rounded-full bg-[#13ec5b] flex items-center justify-center text-white">
             <Waves size={24} />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">VibeLoggers</h1>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">VibeLoggers</h1>
         </div>
         <nav className="flex flex-col gap-2">
           {navItems.map((item) => {
@@ -34,8 +34,8 @@ export default function Sidebar({ user }: { user: { name: string; isAdmin?: bool
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
                   isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "hover:bg-white/50 text-slate-600"
+                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                    : "hover:bg-white/50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-400"
                 }`}
               >
                 <Icon size={20} />
@@ -46,13 +46,13 @@ export default function Sidebar({ user }: { user: { name: string; isAdmin?: bool
         </nav>
       </div>
       <div className="mt-auto p-6">
-        <div className="flex items-center gap-3 p-3 bg-white/40 rounded-xl border border-slate-200/50">
-          <div className="size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
+        <div className="flex items-center gap-3 p-3 bg-white/40 dark:bg-slate-700/40 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
+          <div className="size-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-slate-400 dark:text-slate-300">
             <UserIcon size={20} />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-800">{user.name}</p>
-            <p className="text-xs text-slate-500">{user.isAdmin ? "Master Admin" : "Premium Üye"}</p>
+            <p className="text-sm font-bold text-slate-800 dark:text-white">{user.name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{user.isAdmin ? "Master Admin" : "Premium Üye"}</p>
           </div>
         </div>
       </div>

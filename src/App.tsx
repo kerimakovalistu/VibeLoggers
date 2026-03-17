@@ -46,7 +46,7 @@ export default function App() {
   };
 
   if (loading || dbStatus === "checking") {
-    return <div className="min-h-screen flex items-center justify-center bg-[#f6f8f6]">Sistem kontrol ediliyor...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-[#f6f8f6] dark:bg-slate-900 dark:text-white transition-colors duration-200">Sistem kontrol ediliyor...</div>;
   }
 
   if (dbStatus === "setup-required") {
@@ -72,7 +72,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen bg-[#f6f8f6] text-slate-900 font-sans">
+      <div className="flex min-h-screen bg-[#f6f8f6] dark:bg-slate-900 text-slate-900 dark:text-white font-sans transition-colors duration-200">
         <Sidebar user={user} />
         <main className="flex-1 ml-72 p-8 lg:p-12 flex flex-col h-screen overflow-y-auto">
           <Routes>

@@ -19,24 +19,24 @@ export default function Admin() {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-full">Yükleniyor...</div>;
+    return <div className="flex items-center justify-center h-full dark:text-white">Yükleniyor...</div>;
   }
 
   return (
     <div className="max-w-6xl mx-auto w-full">
       <header className="mb-12">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Sistem Yönetimi</h2>
-        <p className="text-slate-500">Uygulama genel durumu ve istatistikleri</p>
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Sistem Yönetimi</h2>
+        <p className="text-slate-500 dark:text-slate-400">Uygulama genel durumu ve istatistikleri</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-          <div className="size-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+          <div className="size-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <Server size={24} />
           </div>
           <div>
-            <p className="text-sm text-slate-500 font-medium">Sistem Durumu</p>
-            <p className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Sistem Durumu</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               {stats.status === "online" ? (
                 <><span className="size-2.5 rounded-full bg-emerald-500"></span> Aktif</>
               ) : (
@@ -46,54 +46,54 @@ export default function Admin() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-          <div className="size-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+          <div className="size-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <Database size={24} />
           </div>
           <div>
-            <p className="text-sm text-slate-500 font-medium">Veritabanı</p>
-            <p className="text-xl font-bold text-slate-900">Bağlı</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Veritabanı</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">Bağlı</p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-          <div className="size-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+          <div className="size-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <Users size={24} />
           </div>
           <div>
-            <p className="text-sm text-slate-500 font-medium">Toplam Kullanıcı</p>
-            <p className="text-xl font-bold text-slate-900">{stats.userCount}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Toplam Kullanıcı</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.userCount}</p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-          <div className="size-12 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+          <div className="size-12 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400">
             <FileText size={24} />
           </div>
           <div>
-            <p className="text-sm text-slate-500 font-medium">Toplam Viblog</p>
-            <p className="text-xl font-bold text-slate-900">{stats.viblogCount}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Toplam Viblog</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.viblogCount}</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-        <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <Activity size={20} className="text-indigo-500" />
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <Activity size={20} className="text-indigo-500 dark:text-indigo-400" />
           Sistem Bilgileri
         </h3>
         <div className="space-y-4">
-          <div className="flex justify-between items-center py-3 border-b border-slate-100">
-            <span className="text-slate-500">Node.js Versiyonu</span>
-            <span className="font-medium text-slate-900">v22.x</span>
+          <div className="flex justify-between items-center py-3 border-b border-slate-100 dark:border-slate-700">
+            <span className="text-slate-500 dark:text-slate-400">Node.js Versiyonu</span>
+            <span className="font-medium text-slate-900 dark:text-white">v22.x</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-slate-100">
-            <span className="text-slate-500">Prisma Versiyonu</span>
-            <span className="font-medium text-slate-900">v5.22.0</span>
+          <div className="flex justify-between items-center py-3 border-b border-slate-100 dark:border-slate-700">
+            <span className="text-slate-500 dark:text-slate-400">Prisma Versiyonu</span>
+            <span className="font-medium text-slate-900 dark:text-white">v5.22.0</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-slate-100">
-            <span className="text-slate-500">Master Hesap</span>
-            <span className="font-medium text-emerald-600">Aktif (neo)</span>
+          <div className="flex justify-between items-center py-3 border-b border-slate-100 dark:border-slate-700">
+            <span className="text-slate-500 dark:text-slate-400">Master Hesap</span>
+            <span className="font-medium text-emerald-600 dark:text-emerald-400">Aktif (neo)</span>
           </div>
         </div>
       </div>
