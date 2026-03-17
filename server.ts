@@ -23,6 +23,7 @@ async function startServer() {
   const PORT = 3000;
 
   // Security Middlewares
+  app.set("trust proxy", 1);
   app.use(helmet({
     contentSecurityPolicy: false, // Disabled for Vite dev server compatibility
   }));
@@ -36,6 +37,7 @@ async function startServer() {
     message: { error: "Çok fazla istek gönderildi, lütfen daha sonra tekrar deneyin." },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { xForwardedForHeader: false }
   });
 
   const authLimiter = rateLimit({
@@ -44,6 +46,7 @@ async function startServer() {
     message: { error: "Çok fazla giriş denemesi, lütfen daha sonra tekrar deneyin." },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { xForwardedForHeader: false }
   });
 
   app.use("/api/", apiLimiter);
@@ -228,8 +231,12 @@ async function startServer() {
 
   app.get("/api/viblogs", async (req, res) => {
     try {
+      const userId = req.query.userId ? Number(req.query.userId) : undefined;
       const viblogs = await prisma.viblog.findMany({
-        include: { user: { select: { id: true, name: true } } }, // Don't send user passwords in feed
+        include: { 
+          user: { select: { id: true, name: true } },
+          ...(userId ? { likes: { where: { userId } } } : {})
+        },
         orderBy: { createdAt: "desc" },
         take: 50, // Limit to 50 recent viblogs
       });
@@ -269,17 +276,80 @@ async function startServer() {
   app.post("/api/viblogs/:id/like", async (req, res) => {
     try {
       const { id } = req.params;
-      if (isNaN(Number(id))) {
-        return res.status(400).json({ error: "Geçersiz viblog ID'si." });
+      const { userId } = req.body;
+      
+      if (isNaN(Number(id)) || !userId) {
+        return res.status(400).json({ error: "Geçersiz istek." });
       }
 
-      const viblog = await prisma.viblog.update({
-        where: { id: Number(id) },
-        data: { likesCount: { increment: 1 } },
+      const viblogId = Number(id);
+      const uid = Number(userId);
+
+      const existingLike = await prisma.like.findUnique({
+        where: {
+          userId_viblogId: {
+            userId: uid,
+            viblogId: viblogId
+          }
+        }
       });
-      res.json(viblog);
+
+      if (existingLike) {
+        // Unlike
+        await prisma.like.delete({ where: { id: existingLike.id } });
+        const viblog = await prisma.viblog.update({
+          where: { id: viblogId },
+          data: { likesCount: { decrement: 1 } },
+        });
+        return res.json({ action: "unliked", likesCount: viblog.likesCount });
+      } else {
+        // Like
+        await prisma.like.create({
+          data: { userId: uid, viblogId: viblogId }
+        });
+        const viblog = await prisma.viblog.update({
+          where: { id: viblogId },
+          data: { likesCount: { increment: 1 } },
+        });
+        return res.json({ action: "liked", likesCount: viblog.likesCount });
+      }
     } catch (error) {
       res.status(400).json({ error: "Beğeni işlemi başarısız." });
+    }
+  });
+
+  app.post("/api/users/:id/password", async (req, res) => {
+    try {
+      const userId = Number(req.params.id);
+      const { oldPassword, newPassword } = req.body;
+
+      if (isNaN(userId) || !oldPassword || !newPassword) {
+        return res.status(400).json({ error: "Eksik bilgi." });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ error: "Yeni şifre en az 6 karakter olmalıdır." });
+      }
+
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+      }
+
+      const isValidPassword = await bcrypt.compare(oldPassword, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Mevcut şifre yanlış." });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword }
+      });
+
+      res.json({ message: "Şifre başarıyla güncellendi." });
+    } catch (error) {
+      res.status(500).json({ error: "Şifre güncellenemedi." });
     }
   });
 
