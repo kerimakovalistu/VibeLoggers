@@ -32,7 +32,17 @@ export default function App() {
     if (dbStatus === "connected") {
       const storedUser = localStorage.getItem("vibeloggers_user");
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && (parsed.id === 0 || parsed.email === "master@vibeloggers.local")) {
+            localStorage.removeItem("vibeloggers_user");
+            setUser(null);
+          } else {
+            setUser(parsed);
+          }
+        } catch(e) {
+          localStorage.removeItem("vibeloggers_user");
+        }
       }
       setLoading(false);
     } else if (dbStatus === "setup-required") {

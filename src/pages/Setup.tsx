@@ -34,8 +34,8 @@ export default function Setup() {
       if (res.ok) {
         setStatus({ type: "success", message: data.message + " Yönlendiriliyorsunuz..." });
         setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
+          window.location.reload();
+        }, 4000);
       } else {
         setStatus({ type: "error", message: data.error || "Kurulum başarısız oldu." });
       }

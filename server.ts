@@ -18,6 +18,21 @@ const execPromise = util.promisify(exec);
 // Initialize Prisma client with the current env
 let prisma = new PrismaClient();
 
+// Logger Helper
+async function logAction(action: string, details: string, userId?: number) {
+  try {
+    await prisma.log.create({
+      data: {
+        action,
+        details,
+        userId
+      }
+    });
+  } catch (error) {
+    console.error("Log error:", error);
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -205,11 +220,18 @@ async function startServer() {
         return res.status(401).json({ error: "Geçersiz giriş bilgileri." });
       }
 
+      if (user.isBanned) {
+        await logAction("LOGIN_FAILED", `Yasaklı hesap girişi denendi: ${user.name}`, user.id);
+        return res.status(403).json({ error: "Hesabınız sistem yöneticisi tarafından uzaklaştırılmıştır." });
+      }
+
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (isValidPassword) {
+        await logAction("LOGIN", `Oturum açıldı: ${user.name}`, user.id);
         const { password: _, ...userWithoutPassword } = user;
         res.json(userWithoutPassword);
       } else {
+        await logAction("LOGIN_FAILED", `Hatalı şifre denemesi: ${user.name}`, user.id);
         res.status(401).json({ error: "Geçersiz giriş bilgileri." });
       }
     } catch (error) {
@@ -225,7 +247,7 @@ async function startServer() {
       }
 
       const viblogs = await prisma.viblog.findMany({
-        where: { userId },
+        where: { userId, isDeleted: false },
         orderBy: { createdAt: "desc" }
       });
       
@@ -245,6 +267,7 @@ async function startServer() {
     try {
       const userId = req.query.userId ? Number(req.query.userId) : undefined;
       const viblogs = await prisma.viblog.findMany({
+        where: { isDeleted: false },
         include: { 
           user: { select: { id: true, name: true } },
           ...(userId ? { likes: { where: { userId } } } : {})
@@ -359,12 +382,96 @@ async function startServer() {
         data: { password: hashedPassword }
       });
 
+      await logAction("PASSWORD_CHANGE", `Kullanıcı şifresini değiştirdi: ${user.name}`, user.id);
       res.json({ message: "Şifre başarıyla güncellendi." });
     } catch (error) {
       res.status(500).json({ error: "Şifre güncellenemedi." });
     }
   });
 
+      // Admin Yönetim Endpoints
+      app.get("/api/admin/users", async (req, res) => {
+        try {
+          const users = await prisma.user.findMany({
+            select: { id: true, name: true, email: true, isAdmin: true, isBanned: true },
+            orderBy: { id: "desc" }
+          });
+          res.json(users);
+        } catch (error) {
+          res.status(500).json({ error: "Kullanıcılar alınamadı." });
+        }
+      });
+    
+      app.get("/api/admin/viblogs", async (req, res) => {
+        try {
+          const viblogs = await prisma.viblog.findMany({
+            include: { user: { select: { name: true } } },
+            orderBy: { createdAt: "desc" }
+          });
+          res.json(viblogs);
+        } catch (error) {
+          res.status(500).json({ error: "İçerikler alınamadı." });
+        }
+      });
+    
+      app.get("/api/admin/logs", async (req, res) => {
+        try {
+          const logs = await prisma.log.findMany({
+            include: { user: { select: { name: true } } },
+            orderBy: { createdAt: "desc" },
+            take: 100
+          });
+          res.json(logs);
+        } catch (error) {
+          res.status(500).json({ error: "Loglar alınamadı." });
+        }
+      });
+    
+      app.post("/api/admin/users/:id/ban", async (req, res) => {
+        try {
+          const { activeUserId } = req.body;
+          const admin = await prisma.user.findUnique({ where: { id: Number(activeUserId) } });
+          if (!admin || !admin.isAdmin) return res.status(403).json({ error: "Yetkisiz erişim." });
+    
+          const targetId = Number(req.params.id);
+          const user = await prisma.user.findUnique({ where: { id: targetId } });
+          if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+          if (user.isAdmin) return res.status(400).json({ error: "Yöneticiler yasaklanamaz." });
+    
+          const updated = await prisma.user.update({
+            where: { id: targetId },
+            data: { isBanned: !user.isBanned }
+          });
+    
+          await logAction("USER_BAN_TOGGLE", `Hesap ${updated.isBanned ? 'yasaklandı' : 'yasağı kaldırıldı'}: ${updated.name}`, admin.id);
+          res.json(updated);
+        } catch (error) {
+          res.status(500).json({ error: "İşlem başarısız." });
+        }
+      });
+    
+      app.post("/api/admin/viblogs/:id/toggle", async (req, res) => {
+        try {
+          const { activeUserId } = req.body;
+          const admin = await prisma.user.findUnique({ where: { id: Number(activeUserId) } });
+          if (!admin || !admin.isAdmin) return res.status(403).json({ error: "Yetkisiz erişim." });
+    
+          const targetId = Number(req.params.id);
+          const viblog = await prisma.viblog.findUnique({ where: { id: targetId } });
+          if (!viblog) return res.status(404).json({ error: "İçerik bulunamadı." });
+    
+          const updated = await prisma.viblog.update({
+            where: { id: targetId },
+            data: { isDeleted: !viblog.isDeleted }
+          });
+    
+          await logAction("POST_DELETE_TOGGLE", `İçerik (ID: ${updated.id}) ${updated.isDeleted ? 'gizlendi' : 'geri getirildi'}`, admin.id);
+          res.json(updated);
+        } catch (error) {
+          res.status(500).json({ error: "İşlem başarısız." });
+        }
+      });
+    
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
