@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Send, AlertCircle } from "lucide-react";
 
 const EMOTIONS = [
-  { label: "Mutlu", color: "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50" },
-  { label: "Nostaljik", color: "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-900/50" },
-  { label: "Karmaşık", color: "bg-purple-50 text-purple-600 border-purple-100 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800 dark:hover:bg-purple-900/50" },
-  { label: "Sakin", color: "bg-teal-50 text-teal-600 border-teal-100 hover:bg-teal-100 dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800 dark:hover:bg-teal-900/50" },
-  { label: "Heyecanlı", color: "bg-pink-50 text-pink-600 border-pink-100 hover:bg-pink-100 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800 dark:hover:bg-pink-900/50" },
+  { label: "Mutlu", emoji: "😊", color: "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50" },
+  { label: "Nostaljik", emoji: "🌅", color: "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-900/50" },
+  { label: "Karmaşık", emoji: "🌪️", color: "bg-purple-50 text-purple-600 border-purple-100 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800 dark:hover:bg-purple-900/50" },
+  { label: "Sakin", emoji: "🌿", color: "bg-teal-50 text-teal-600 border-teal-100 hover:bg-teal-100 dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800 dark:hover:bg-teal-900/50" },
+  { label: "Heyecanlı", emoji: "✨", color: "bg-pink-50 text-pink-600 border-pink-100 hover:bg-pink-100 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800 dark:hover:bg-pink-900/50" },
 ];
 
 export default function CreateViblog({ user }: { user: { id: number } }) {
@@ -104,7 +104,8 @@ export default function CreateViblog({ user }: { user: { id: number } }) {
                   emotionTag === emotion.label ? "ring-2 ring-offset-2 ring-slate-400 dark:ring-slate-500 " + emotion.color : emotion.color
                 }`}
               >
-                {emotion.label}
+                <span>{emotion.emoji}</span>
+                <span>{emotion.label}</span>
               </button>
             ))}
           </div>

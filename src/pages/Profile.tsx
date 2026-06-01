@@ -40,15 +40,20 @@ export default function Profile({ user }: { user: { id: number; name: string; em
 
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
         <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="size-32 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-300 border-4 border-white dark:border-slate-800 shadow-lg">
+          <div className="size-32 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-300 border-4 border-white dark:border-slate-800 shadow-lg shrink-0">
             <User size={64} />
           </div>
           
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{user.name}</h3>
             <p className="text-slate-500 dark:text-slate-400 mt-1">{user.email}</p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
-              Premium Üye
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
+                Aktif VibeLogger
+              </div>
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold uppercase tracking-wider">
+                🔥 {stats.viblogCount > 0 ? "Seri Aktif" : "Yeni Başlayan"}
+              </div>
             </div>
           </div>
           

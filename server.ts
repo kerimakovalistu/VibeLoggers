@@ -62,7 +62,11 @@ async function startServer() {
       await prisma.user.count();
       res.json({ status: "connected" });
     } catch (error) {
-      res.json({ status: "setup-required" });
+      if (process.env.DATABASE_URL) {
+        res.json({ status: "db-error" });
+      } else {
+        res.json({ status: "setup-required" });
+      }
     }
   });
 
@@ -80,9 +84,13 @@ async function startServer() {
   // Admin Setup Route
   app.post("/api/admin/setup", async (req, res) => {
     try {
-      const { databaseUrl } = req.body;
+      const { databaseUrl, adminName, adminEmail, adminPassword } = req.body;
       if (!databaseUrl) {
         return res.status(400).json({ error: "Database URL is required." });
+      }
+
+      if (!adminName || !adminEmail || !adminPassword) {
+        return res.status(400).json({ error: "Admin hesabı bilgileri eksik." });
       }
 
       // Write to .env file
@@ -116,10 +124,24 @@ async function startServer() {
         }
       });
 
-      res.json({ message: "Database configured successfully." });
+      // Create admin user if it doesn't exist
+      const existingUserCount = await prisma.user.count();
+      if (existingUserCount === 0 || !(await prisma.user.findFirst({ where: { OR: [{ email: adminEmail }, { name: adminName }] } }))) {
+         const hashedPassword = await bcrypt.hash(adminPassword, 10);
+         await prisma.user.create({
+            data: {
+               name: adminName,
+               email: adminEmail,
+               password: hashedPassword,
+               isAdmin: true
+            }
+         });
+      }
+
+      res.json({ message: "Sistem ve admin hesabı başarıyla kuruldu." });
     } catch (error: any) {
       console.error("Setup error:", error);
-      res.status(500).json({ error: "Setup failed: " + (error.message || "Unknown error") });
+      res.status(500).json({ error: "Kurulum başarısız oldu: " + (error.message || "Bilinmeyen hata") });
     }
   });
 
@@ -168,16 +190,6 @@ async function startServer() {
       
       if (!email || !password) {
         return res.status(400).json({ error: "E-posta/Kullanıcı adı ve şifre zorunludur." });
-      }
-
-      // Hardcoded Master Account (Bypasses DB)
-      if (email === "neo" && password === "tester") {
-        return res.json({
-          id: 0,
-          name: "neo",
-          email: "master@vibeloggers.local",
-          isAdmin: true
-        });
       }
 
       const user = await prisma.user.findFirst({ 
