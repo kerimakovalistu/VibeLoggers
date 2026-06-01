@@ -108,7 +108,7 @@ export default function App() {
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile user={user} />} />
             <Route path="/settings" element={<Settings onLogout={handleLogout} />} />
-            {user.isAdmin && <Route path="/admin" element={<Admin />} />}
+            {user.isAdmin && <Route path="/admin" element={<Admin user={user} />} />}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
