@@ -40,23 +40,13 @@ npm install
 ```
 *(Bu işlem internet hızınıza bağlı olarak birkaç dakika sürebilir. `node_modules` klasörü oluşacaktır.)*
 
-### Adım 3: `.env` Dosyası Oluşturun
-Proje ana dizininde (package.json'ın olduğu yer) çevre değişkenlerini tutacak bir `.env` dosyası oluşturmamız gerekiyor.
-Zaten bir `.env.example` dosyası vardır, bunu kopyalayıp ismini `.env` yapın.
-
-Oluşturduğunuz `.env` dosyasının içi şöyle görünmelidir:
-```env
-# Veritabanı bağlantı cümleniz buraya gelecek (Kurulum sayfasından ayarlanacak)
-DATABASE_URL=""
-```
-
-### Adım 4: Veritabanını Hazırlayın
+### Adım 3: Veritabanını Hazırlayın
 Uygulama Prisma ORM kullanmaktadır ve kendi tablolarını otomatik oluşturabilmektedir. Ancak uygulamayı tam başlatmadan önce, Prisma yapılandırmasını kurmak iyi bir pratiktir.
 
 *Uygulama çalıştıktan sonra kendi içerisindeki `/setup` sayfası ile veritabanını bağlayıp admin kullanıcısı oluşturacaktır.* 
 Bunun için **MySQL veritabanınızın ve sunucusunun (XAMPP kullanıyorsanız Apache ve MySQL'in) çalışır durumda olduğundan emin olun.** Boş bir MYSQL veritabanı açmanıza gerek var ise, phpMyAdmin ya da MySQL Workbench üzerinden örneğin `vibeloggers` adında boş bir şema/veritabanı oluşturun ve devam edin.
 
-### Adım 5: Uygulamayı Başlatın (Geliştirici Modunda)
+### Adım 4: Uygulamayı Başlatın (Geliştirici Modunda)
 Tüm ayarlar bittikten sonra uygulamayı başlatmak için terminalde:
 ```bash
 npm run dev
@@ -68,7 +58,7 @@ Server running on http://localhost:3000
 Tarayıcınızı (Google Chrome, Firefox vb.) açın ve şu adrese gidin:
 **`http://localhost:3000`**
 
-### Adım 6: Uygulama İçi Kurulum (Setup Yönlendirmesi)
+### Adım 5: Uygulama İçi Kurulum (Setup Yönlendirmesi)
 Uygulamayı ilk açtığınızda veritabanına bağlanılamadığı için sistem sizi otomatik olarak `Sistem Kurulumu` (`/setup`) sayfasına yönlendirecektir. Bu ekranda:
 
 1. **SQL Connection String (URL):** MySQL bağlantı cümlenizi girin.
