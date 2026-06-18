@@ -127,7 +127,14 @@ async function startServer() {
       process.env.DATABASE_URL = databaseUrl;
 
       // Run prisma db push to create tables
-      await execPromise("npx prisma db push --accept-data-loss");
+      try {
+        await execPromise("npx prisma db push --accept-data-loss");
+      } catch (pushError: any) {
+        if (pushError.message && (pushError.message.includes("P1001") || pushError.message.includes("reach database server"))) {
+          return res.status(400).json({ error: "Veritabanı sunucusuna ulaşılamadı. Lütfen MySQL / DB'nin (XAMPP vb.) çalışır durumda ve erişilebilir olduğundan emin olunuz." });
+        }
+        throw pushError;
+      }
 
       // Re-initialize Prisma Client
       prisma.$disconnect();
