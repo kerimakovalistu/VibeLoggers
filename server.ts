@@ -108,36 +108,19 @@ async function startServer() {
         return res.status(400).json({ error: "Admin hesabı bilgileri eksik." });
       }
 
-      // Write to .env file
-      const envPath = path.resolve(process.cwd(), ".env");
-      let envContent = "";
-      if (fs.existsSync(envPath)) {
-        envContent = fs.readFileSync(envPath, "utf-8");
-      }
-      
-      const newEnvContent = envContent
-        .split("\n")
-        .filter(line => !line.startsWith("DATABASE_URL="))
-        .concat(`DATABASE_URL="${databaseUrl}"`)
-        .join("\n");
-        
-      fs.writeFileSync(envPath, newEnvContent);
-
-      // Set environment variable for the current process so exec picks it up
-      process.env.DATABASE_URL = databaseUrl;
-
-      // Run prisma db push to create tables
+      // Check DB without bringing down the server via .env write yet
       try {
-        await execPromise("npx prisma db push --accept-data-loss");
+        await execPromise("npx prisma db push --accept-data-loss", {
+          env: { ...process.env, DATABASE_URL: databaseUrl }
+        });
       } catch (pushError: any) {
-        if (pushError.message && (pushError.message.includes("P1001") || pushError.message.includes("reach database server"))) {
-          return res.status(400).json({ error: "Veritabanı sunucusuna ulaşılamadı. Lütfen MySQL / DB'nin (XAMPP vb.) çalışır durumda ve erişilebilir olduğundan emin olunuz." });
-        }
-        throw pushError;
+        console.error("Prisma push error:", pushError);
+        return res.status(400).json({ error: "Veritabanı bağlantısı veya tablo kurulumu başarısız oldu. Veritabanı bilgilerinin doğru ve MySQL sunucusunun çalışır durumda olduğundan emin olunuz." });
       }
 
       // Re-initialize Prisma Client
-      prisma.$disconnect();
+      await prisma.$disconnect();
+      process.env.DATABASE_URL = databaseUrl; // Set for current process so system status check passes
       prisma = new PrismaClient({
         datasources: {
           db: {
@@ -161,6 +144,23 @@ async function startServer() {
       }
 
       res.json({ message: "Sistem ve admin hesabı başarıyla kuruldu." });
+
+      // Gecikmeli olarak .env yaz, ki Vite sunucusu yanıt gittikten sonra yeniden başlasın
+      setTimeout(() => {
+        const envPath = path.resolve(process.cwd(), ".env");
+        let envContent = "";
+        if (fs.existsSync(envPath)) {
+          envContent = fs.readFileSync(envPath, "utf-8");
+        }
+        
+        const newEnvContent = envContent
+          .split("\n")
+          .filter(line => !line.startsWith("DATABASE_URL="))
+          .concat(`DATABASE_URL="${databaseUrl}"`)
+          .join("\n");
+          
+        fs.writeFileSync(envPath, newEnvContent);
+      }, 500);
     } catch (error: any) {
       console.error("Setup error:", error);
       res.status(500).json({ error: "Kurulum başarısız oldu: " + (error.message || "Bilinmeyen hata") });
